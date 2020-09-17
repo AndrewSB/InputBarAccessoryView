@@ -11,6 +11,8 @@ import UIKit
 class InputBarStyleSelectionController: UITableViewController {
     
     let styles = InputBarStyle.allCases
+
+    let tabBarExampleIndexPath = IndexPath(row: 6, section: 2)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,6 +46,9 @@ class InputBarStyleSelectionController: UITableViewController {
         if section == 0 {
             return 1
         }
+        if section == 2 {
+            return styles.count + 1 // an extra, for the tab bar example
+        }
         return styles.count
     }
     
@@ -51,6 +56,8 @@ class InputBarStyleSelectionController: UITableViewController {
         let cell = UITableViewCell()
         if indexPath.section == 0 {
             cell.textLabel?.text = "README Preview"
+        } else if indexPath == tabBarExampleIndexPath {
+            cell.textLabel?.text = "Slack in a tab bar"
         } else {
             cell.textLabel?.text = styles[indexPath.row].rawValue
         }
@@ -69,10 +76,17 @@ class InputBarStyleSelectionController: UITableViewController {
                                                         conversation: convo),
                     animated: true)
             } else if indexPath.section == 2 {
-                navigationController?.pushViewController(
-                    SubviewExampleViewController(style: styles[indexPath.row],
-                                                 conversation: convo),
-                    animated: true)
+                if indexPath.row == tabBarExampleIndexPath.row {
+                    let tabBarController = UITabBarController()
+                    let contained = SubviewExampleViewController(style: InputBarStyle.slack, conversation: convo)
+                    tabBarController.viewControllers = [contained]
+                    navigationController?.pushViewController(tabBarController, animated: true)
+                } else {
+                    navigationController?.pushViewController(
+                        SubviewExampleViewController(style: styles[indexPath.row],
+                                                     conversation: convo),
+                        animated: true)
+                }
             }
         }
     }
